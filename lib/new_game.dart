@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:hearts_scorer/models.dart';
 
@@ -69,19 +70,21 @@ class _NewGameState extends State {
     ];
   }
 
-  void doNothing() { }
-
   Widget buildPlayerTile(BuildContext context, int playerIdx) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
           child: Row(
             children: [
-              Expanded(child: const TextField(
-                  decoration: InputDecoration(border: OutlineInputBorder(), labelText: 'Player Name')
+              Expanded(child: TextField(
+                  decoration: InputDecoration(border: OutlineInputBorder(), labelText: 'Player Name'),
+                  onChanged: (String value) {
+                    print("Updating player ${playerIdx} to $value");
+                    _playerNames[playerIdx] = value;
+                  }
               )),
               IconButton(onPressed: () {
-                setState( () { if (_playerNames.length > 2) _playerNames.removeAt(playerIdx); });
+                setState( () { if (_playerNames.length > 3) _playerNames.removeAt(playerIdx); });
               }, icon: Icon(Icons.delete, color: Colors.red), )
             ]
           ),
@@ -94,10 +97,19 @@ class _NewGameState extends State {
       const Text('Game options: ', style: TextStyle(fontSize: 18.0)),
       Padding(
         padding: EdgeInsets.all(12.0),
-        child: const TextField(
-          decoration: InputDecoration(border: OutlineInputBorder(),
-              labelText: 'Game over at...'
-            ),
+        child: TextField(
+          decoration: InputDecoration(border: OutlineInputBorder(),labelText: 'Game over at...'),
+          controller: TextEditingController(text: _lossThreshold.toString()),
+          keyboardType: TextInputType.number,
+          inputFormatters: [ FilteringTextInputFormatter.digitsOnly ],
+          onChanged: (String value) {
+            if (value.isNotEmpty) {
+              _lossThreshold = int.parse(value);
+            }
+            else {
+              _lossThreshold = 0;
+            }
+          },
         ),
       ),
       SwitchListTile(
@@ -129,6 +141,20 @@ class _NewGameState extends State {
     ];
   }
 
+  List<Widget> buildNewGameTile(BuildContext context) {
+    return <Widget>[
+      Padding(
+        padding: EdgeInsets.all(12.0),
+        child: ElevatedButton(
+          child: const Text("Let's play!"),
+          onPressed: () {
+            print("Time to go to GameMainScreen, passing over the options and ${_playerNames}");
+          }
+        )
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,7 +163,9 @@ class _NewGameState extends State {
         children:
           buildPlayers(context) +
           [ const Divider(height: 0) ] +
-          buildOptions(context)
+          buildOptions(context) +
+          [ const Divider(height: 0) ] +
+          buildNewGameTile(context)
       )
     );
   }
