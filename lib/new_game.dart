@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
 import 'package:hearts_scorer/models.dart';
+import 'package:hearts_scorer/main.dart';
+import 'package:hearts_scorer/game_main.dart';
 
 /*
 This screen is designed to gather options and player names for a new game
@@ -33,15 +36,15 @@ Each switch change sends a SnackBar message about the option chosen:
 "Reset score to 0 at exactly 100" vs "No score reset possible"
  */
 class NewGameScreen extends StatefulWidget {
+  const NewGameScreen({super.key});
+
   @override
   _NewGameState createState() => _NewGameState();
 }
 class _NewGameState extends State {
-  final _formKey = GlobalKey();
+  _NewGameState();
 
-  List<String> _playerNames = [
-    "Player 1", "Player 2", "Player 3", "Player 4"
-  ];
+  final List<String> _playerNames = [ "Player 1", "Player 2", "Player 3", "Player 4" ];
   bool _jackOn = true;
   bool _shootPositive = true;
   bool _resetOnThreshold = true;
@@ -73,21 +76,16 @@ class _NewGameState extends State {
   Widget buildPlayerTile(BuildContext context, int playerIdx) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
-      child: Container(
-          child: Row(
-            children: [
-              Expanded(child: TextField(
-                  decoration: InputDecoration(border: OutlineInputBorder(), labelText: 'Player Name'),
-                  onChanged: (String value) {
-                    print("Updating player ${playerIdx} to $value");
-                    _playerNames[playerIdx] = value;
-                  }
-              )),
-              IconButton(onPressed: () {
-                setState( () { if (_playerNames.length > 3) _playerNames.removeAt(playerIdx); });
-              }, icon: Icon(Icons.delete, color: Colors.red), )
-            ]
-          ),
+      child: Row(
+        children: [
+          Expanded(child: TextField(
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Player Name'),
+              onChanged: (String value) { _playerNames[playerIdx] = value; }
+          )),
+          IconButton(onPressed: () {
+            setState( () { if (_playerNames.length > 3) _playerNames.removeAt(playerIdx); });
+          }, icon: const Icon(Icons.delete, color: Colors.red), )
+        ]
       )
     );
   }
@@ -96,9 +94,9 @@ class _NewGameState extends State {
     return <Widget>[
       const Text('Game options: ', style: TextStyle(fontSize: 18.0)),
       Padding(
-        padding: EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12.0),
         child: TextField(
-          decoration: InputDecoration(border: OutlineInputBorder(),labelText: 'Game over at...'),
+          decoration: const InputDecoration(border: OutlineInputBorder(),labelText: 'Game over at...'),
           controller: TextEditingController(text: _lossThreshold.toString()),
           keyboardType: TextInputType.number,
           inputFormatters: [ FilteringTextInputFormatter.digitsOnly ],
@@ -144,11 +142,22 @@ class _NewGameState extends State {
   List<Widget> buildNewGameTile(BuildContext context) {
     return <Widget>[
       Padding(
-        padding: EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12.0),
         child: ElevatedButton(
           child: const Text("Let's play!"),
           onPressed: () {
-            print("Time to go to GameMainScreen, passing over the options and ${_playerNames}");
+            var g = Game.forPlayers(_playerNames, passIncreasinglyLeft: _passLeftIncreasingly, jackOn: _jackOn,
+              resetOnExact: _resetOnThreshold, lossThreshold: _lossThreshold);
+            setState( () {
+              context.read<GameProvider>().add(g);
+              print("After add, game provider list looks like ${context.read<GameProvider>().games}");
+            } );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GameMainScreen(game: g),
+              ),
+            );
           }
         )
       ),
@@ -158,6 +167,10 @@ class _NewGameState extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text('New Game'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(8),
         children:

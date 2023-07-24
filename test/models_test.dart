@@ -157,7 +157,7 @@ void main() {
       expect(game.jackOn, isTrue);
       expect(game.shootPositive, isFalse);
       expect(game.passIncreasinglyLeft, isFalse);
-      expect(game.exactThresholdResets, isTrue);
+      expect(game.resetOnExact, isTrue);
       expect(game.lossThreshold, equals(100));
     });
     test('Pass is correct with standard pass for 4-, 5-, 6- and 7-player games', () {
@@ -176,7 +176,7 @@ void main() {
       passRotation(Game.forPlayers(["Ted", "Charlotte", "Michael", "Matthew", "Lance", "Donna", "John"]),
           [Pass.left, Pass.right, Pass.twoLeft, Pass.twoRight, Pass.threeLeft, Pass.threeRight, Pass.hold, Pass.left]);
     });
-    test('Pass is correct with increasingly left pass for 4-, 5-, 6- and 5-player games', () {
+    test('Pass is correct with increasingly left pass for 4-, 5-, 6- and 7-player games', () {
       void passRotation(Game g, List<Pass> expected) {
         expect(g.passIncreasinglyLeft, isTrue);
         for (int i=0; i < expected.length; i++) {
@@ -194,8 +194,12 @@ void main() {
       passRotation(Game.forPlayers(["Ted", "Charlotte", "Michael", "Matthew", "Lance", "Donna", "John"], passIncreasinglyLeft: true),
           [Pass.left, Pass.twoLeft, Pass.threeLeft, Pass.threeRight, Pass.twoRight, Pass.right, Pass.hold, Pass.left]);
     });
+    // Test summarize() in various scenarios
   });
 
   group('Complex Game tests', () {
+    // Test for exact threshold reset
+    // Test that game isn't over if nobody is above 100
+    // Test that game is over if somebody is above 100
   });
 }

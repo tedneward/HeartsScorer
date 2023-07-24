@@ -11,7 +11,7 @@ Get here from the GameMainScreen. Goes back to same.
 class GameHistoryScreen extends StatelessWidget {
   final Game game;
 
-  const GameHistoryScreen({super.key, required Game this.game});
+  const GameHistoryScreen({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class GameHistoryScreen extends StatelessWidget {
       body: ListView.builder(
         itemCount: game.history.length,
         itemBuilder: (context, index) {
-          return ListTile(
+          return const ListTile(
             title: Text('Round summary goes in here'),
           );
         },

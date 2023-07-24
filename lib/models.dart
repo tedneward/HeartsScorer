@@ -17,11 +17,12 @@ class Player {
   Player(this.name);
 
   String displayString() {
-    return "${name}";
+    return name;
   }
 
+  @override
   String toString() {
-    return "Player: ${name})";
+    return "Player: $name";
   }
 }
 
@@ -122,16 +123,16 @@ class Round {
 }
 
 class Game {
-  DateTime started = DateTime.timestamp();
+  DateTime started = DateTime.now();
 
   Game({this.shootPositive = false, this.jackOn = true,
         this.resetOnExact = true, this.passIncreasinglyLeft = false,
-        this.exactThresholdResets = true, this.lossThreshold = 100});
+        this.lossThreshold = 100});
 
   Game.forPlayers(List<String> playerNames,
        {this.shootPositive = false, this.jackOn = true,
         this.resetOnExact = true, this.passIncreasinglyLeft = false,
-        this.exactThresholdResets = true, this.lossThreshold = 100})
+        this.lossThreshold = 100})
       : players = playerNames.map((e) => Player(e)).toList();
 
   List<Player> players = [];
@@ -142,7 +143,6 @@ class Game {
   bool jackOn = true;
   bool resetOnExact = true;
   bool passIncreasinglyLeft = false;
-  bool exactThresholdResets = true;
   int lossThreshold = 100;
 
   int currentRound() {
@@ -187,8 +187,37 @@ class Game {
     return players[dealerIdx()];
   }
 
+  int scoreFor(String name) {
+    int score = 0;
+    for (var r in history) {
+      score += r.pointsFor(name);
+
+      // If we reset, check to see if we reset!
+      if (resetOnExact) {
+        if (score == lossThreshold) {
+          score = 0;
+        }
+      }
+    }
+
+    return score;
+  }
+  int scoreForPlayer(Player player) => scoreFor(player.name);
+
+  Map<String, int> currentScore() => Map.fromIterable(players, key: (p) => p.name, value: (p) => scoreForPlayer(p));
+
   bool gameOver() {
     // Get total scores, see if any are over 100
+    for (var p in players) {
+      if (scoreFor(p.name) > lossThreshold)
+        return true;
+    }
+
     return false;
+  }
+
+  String summarize() {
+    // Total up each player's score, and display it in lowest-first order
+    return currentScore().entries.map((e) => "${e.key}:${e.value}").toString();
   }
 }
