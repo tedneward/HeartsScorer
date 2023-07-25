@@ -85,10 +85,6 @@ class Round {
   }
 
   int pointsFor(String player) {
-    if (!good()) {
-      return -1;
-    }
-
     // Shoot-the-moon check
     String shooter = "";
     cards.forEach((key, value) {
