@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:hearts_scorer/models.dart';
+import 'package:hearts_scorer/models/models.dart';
 
 /*
 This screen displays a history of the game's rounds, showing how each player

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:hearts_scorer/splash_screen.dart';
+import 'package:hearts_scorer/ui/splash_screen.dart';
 
 class HeartsScorerApp extends StatelessWidget {
   const HeartsScorerApp({super.key});

@@ -47,6 +47,9 @@ class Take {
   }
 }
 
+// A Round is all players' Takes. Will always add up to 26 points, -10 if
+// the Jack is in effect.
+//
 class Round {
   Game game;
 
@@ -201,6 +204,22 @@ class Game {
   int scoreForPlayer(Player player) => scoreFor(player.name);
 
   Map<String, int> currentScore() => Map.fromIterable(players, key: (p) => p.name, value: (p) => scoreForPlayer(p));
+  Map<String, int> currentSortedScore() => Map.fromEntries(
+      currentScore().entries.toList()..sort((e1, e2) => e1.value.compareTo(e2.value)));
+
+  List<Map<String, int>> historicalScores() {
+    List<Map<String, int>> list = List<Map<String, int>>.empty(growable: true);
+
+    for (var round in history) {
+      Map<String, int> roundScores = {};
+      for (var player in players) {
+        roundScores[player.name] = round.pointsFor(player.name);
+      }
+      list.add(roundScores);
+    }
+
+    return list;
+  }
 
   bool gameOver() {
     // Get total scores, see if any are over 100
@@ -214,6 +233,6 @@ class Game {
 
   String summarize() {
     // Total up each player's score, and display it in lowest-first order
-    return currentScore().entries.map((e) => "${e.key}:${e.value}").toString();
+    return currentSortedScore().entries.map((e) => "${e.key}:${e.value}").toString();
   }
 }

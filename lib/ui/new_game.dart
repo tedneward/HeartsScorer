@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
-import 'package:hearts_scorer/models.dart';
-import 'package:hearts_scorer/main.dart';
-import 'package:hearts_scorer/game_main.dart';
+import 'package:hearts_scorer/models/models.dart';
+import 'package:hearts_scorer/models/providers.dart';
+import 'package:hearts_scorer/ui/game_main.dart';
 
 /*
 This screen is designed to gather options and player names for a new game

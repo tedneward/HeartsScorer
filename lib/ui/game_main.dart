@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:hearts_scorer/models.dart';
-import 'package:hearts_scorer/score_round.dart';
+import 'package:hearts_scorer/models/models.dart';
+import 'package:hearts_scorer/ui/score_round.dart';
 
 /*
 This screen is the main interactive area; it displays each player's current
@@ -75,7 +75,7 @@ class _GameMainState extends State<GameMainScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: (game.gameOver() ? null : () {
           final result = Navigator.push(
             context,
             MaterialPageRoute(
@@ -83,7 +83,7 @@ class _GameMainState extends State<GameMainScreen> {
             ),
           );
           result.then((value) => setState( () => game.history.add(value) ) );
-        },
+        }),
         tooltip: 'Score!',
         child: const Icon(Icons.add_circle),
       ),
@@ -106,7 +106,8 @@ class PlayerCurrentScoreTile extends StatelessWidget {
           title: Text(name),
           titleTextStyle: TextStyle(
             color: Theme.of(context).primaryColor,
-            fontWeight: dealer ? FontWeight.bold : FontWeight.normal,
+            fontWeight: dealer ? FontWeight.bold  : FontWeight.normal,
+            fontStyle: dealer ? FontStyle.italic : FontStyle.normal,
             fontSize: 24
           ),
           tileColor: Theme.of(context).cardTheme.color,

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hearts_scorer/models.dart';
+import 'package:hearts_scorer/models/models.dart';
+import 'package:hearts_scorer/models/providers.dart';
 
 const players3 = ["Ted", "Charlotte", "Michael"];
 const players4 = ["Ted", "Charlotte", "Michael", "Matthew"];
@@ -103,6 +104,46 @@ void main() {
       expect(r.pointsFor("Matthew"), equals(26));
     });
   });
+  group('Round tests with jack off', () {
+    test('A round is good if all hearts and the queen are taken', () {
+      var g = Game.forPlayers(players4);
+      g.jackOn = false;
+      var r = Round(g);
+      r.score("Ted", Take(0));
+      r.score("Charlotte", Take(5));
+      r.score("Matthew", Take(5));
+      r.score("Michael", Take.withQueenAndJack(3));
+
+      expect(r.good(), isTrue);
+    });
+    test('A round is not good if not all hearts are taken, but the queen is taken', () {
+      var g = Game.forPlayers(players4);
+      g.jackOn = false;
+      var r = Round(g);
+      r.score("Ted", Take(0));
+      r.score("Charlotte", Take(0));
+      r.score("Matthew", Take(5));
+      r.score("Michael", Take.withQueenAndJack(3));
+
+      expect(r.good(), isFalse);
+    });
+    test('The state of the jack is irrelevant', () {
+      var g = Game.forPlayers(players4);
+      g.jackOn = false;
+      var r = Round(g);
+      r.score("Ted", Take(0));
+      r.score("Charlotte", Take(0));
+      r.score("Matthew", Take(5));
+      r.score("Michael", Take.withQueenAndJack(3));
+      expect(r.good(), isFalse);
+
+      r.score("Michael", Take.withQueen(3));
+      expect(r.good(), isFalse);
+
+      r.score("Michael", Take.withQueen(8));
+      expect(r.good(), isTrue);
+    });
+  });
 
   group('Simple Game tests', () {
     test('We get an accurate dealer index', () {
@@ -195,6 +236,35 @@ void main() {
           [Pass.left, Pass.twoLeft, Pass.threeLeft, Pass.threeRight, Pass.twoRight, Pass.right, Pass.hold, Pass.left]);
     });
     // Test summarize() in various scenarios
+  });
+
+  group('Game score history', () {
+    test('We can see the round-by-round scores correctly', () {
+      var g = Game.forPlayers(players4);
+      var r = Round(g);
+      r.score("Ted", Take(0));
+      r.score("Charlotte", Take(5));
+      r.score("Matthew", Take(5));
+      r.score("Michael", Take.withQueenAndJack(3));
+      g.history.add(r);
+
+      var r2 = Round(g);
+      r2.score("Ted", Take(0));
+      r2.score("Charlotte", Take(5));
+      r2.score("Matthew", Take(5));
+      r2.score("Michael", Take.withQueenAndJack(3));
+      g.history.add(r2);
+
+      expect(g.historicalScores()[0]['Ted'], equals(0));
+      expect(g.historicalScores()[1]['Charlotte'], equals(5));
+    });
+  });
+
+  group('Persistence', () {
+    test('We can open a database', () {
+      var gp = GameProvider();
+      gp.loadFromDatabase();
+    });
   });
 
   group('Complex Game tests', () {

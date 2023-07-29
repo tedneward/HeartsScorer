@@ -20,6 +20,7 @@ dependencies:
       url: https://github.com/google/flutter-desktop-embedding.git
       path: plugins/window_size
   intl: ^0.18.1
+  sqlite3: ^2.0.0
 
 dev_dependencies:
   flutter_test:

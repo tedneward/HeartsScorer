@@ -6,17 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'package:hearts_scorer/app.dart';
-import 'package:hearts_scorer/models.dart';
-
-class GameProvider with ChangeNotifier {
-  List<Game> games = [];
-
-  List<Game> finishedGames() => games.where( (g) => g.gameOver()).toList();
-  List<Game> unfinishedGames() => games.where( (g) => g.gameOver() == false).toList();
-
-  void add(Game g) { games.add(g); notifyListeners(); }
-}
-
+import 'package:hearts_scorer/models/providers.dart';
 
 void main() {
   setupWindow();
