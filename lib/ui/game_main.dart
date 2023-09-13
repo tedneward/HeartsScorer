@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:hearts_scorer/models/models.dart';
+import 'package:hearts_scorer/ui/game_history.dart';
 import 'package:hearts_scorer/ui/score_round.dart';
 
 /*
@@ -48,11 +49,17 @@ class _GameMainState extends State<GameMainScreen> {
         title: Text('Pass: ${passText[game.currentPass().index]}'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.help),
+            icon: const Icon(Icons.history_edu),
             tooltip: 'Help',
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Push the "+" button to score a round')));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                  builder: (context) => GameHistoryScreen(game: game),
+                )
+              );
+              //ScaffoldMessenger.of(context).showSnackBar(
+              //  const SnackBar(content: Text('Push the "+" button to score a round')));
             },
           ),
         ]

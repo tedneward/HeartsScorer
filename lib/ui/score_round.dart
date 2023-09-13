@@ -27,18 +27,21 @@ Score button returns to the GameMainScreen.
  */
 class ScoreRoundScreen extends StatefulWidget {
   final Game game;
+  late final Round round;
   ScoreRoundScreen({super.key, required this.game});
 
+  ScoreRoundScreen.editRound({super.key, required this.game, required this.round});
+
   @override
-  ScoreRoundState createState() => ScoreRoundState(game: game);
+  ScoreRoundState createState() => ScoreRoundState(game: game, round : round);
 }
 
 class ScoreRoundState extends State<ScoreRoundScreen> {
   late final Game game;
   late final Round round;
 
-  ScoreRoundState({required this.game}) {
-    this.round = Round(this.game);
+  ScoreRoundState({required this.game, round}) {
+    this.round = round ?? Round(this.game);
     this.round.cards.entries.forEach( (entry) { entry.value.hearts = 0; });
   }
 
